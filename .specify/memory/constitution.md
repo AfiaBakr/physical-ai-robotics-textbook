@@ -1,55 +1,46 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report:
+
+- Version change: None -> 1.0.0
+- List of modified principles:
+  - [PRINCIPLE_1_NAME] -> I. Spec-Driven Development (SDD)
+  - [PRINCIPLE_2_NAME] -> II. Test-Driven Development (TDD)
+  - [PRINCIPLE_3_NAME] -> III. Simple, Composable Libraries
+  - [PRINCIPLE_4_NAME] -> IV. Clear and Versioned APIs
+- Added sections:
+  - Governance
+- Removed sections:
+  - [PRINCIPLE_5_NAME]
+  - [PRINCIPLE_6_NAME]
+  - [SECTION_2_NAME]
+  - [SECTION_3_NAME]
+- Templates requiring updates:
+  - ✅ .specify/templates/plan-template.md
+  - ✅ .specify/templates/spec-template.md
+  - ✅ .specify/templates/tasks-template.md
+- Follow-up TODOs: None
+-->
+# Gemini CLI Agent Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Spec-Driven Development (SDD)
+All development work MUST begin with a clear, written specification (`spec.md`). The spec defines the "what" and "why," and must be approved before implementation begins. It serves as the single source of truth for a feature's requirements.
+**Rationale:** Ensures clarity, alignment, and a shared understanding of goals before writing code, reducing rework and ambiguity.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Test-Driven Development (TDD)
+All code MUST be developed using the Red-Green-Refactor cycle. A failing test (`red`) must be written before any implementation code. The goal is to make the test pass (`green`), and then refactor the code for clarity and efficiency while keeping the test passing.
+**Rationale:** Produces a comprehensive test suite, improves code quality, and ensures that the implementation precisely matches the requirements defined by the tests.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Simple, Composable Libraries
+Features SHOULD be implemented as small, single-purpose, composable libraries. Each library must be independently testable and have a clear, well-defined public interface.
+**Rationale:** Promotes code reuse, simplifies maintenance, and allows for easier testing and debugging. Large, monolithic systems are to be avoided.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
-
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
-
-### [PRINCIPLE_6_NAME]
-
-
-[PRINCIPLE__DESCRIPTION]
-
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
-
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### IV. Clear and Versioned APIs
+Any public-facing interface, whether it's a CLI, a function library, or a web service, MUST have a clear, documented, and versioned API. Breaking changes MUST result in a MAJOR version increment (following Semantic Versioning).
+**Rationale:** Provides stability for consumers of the API and makes a clear contract for how the software is intended to be used.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+This Constitution is the highest-level governing document for the project. Amendments to this Constitution require a proposal, review, and majority approval from the core team. All changes must be documented in a new version of this file. All code contributions will be evaluated for compliance with these principles during code review.
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
-
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2025-12-06 | **Last Amended**: 2025-12-06
