@@ -1,0 +1,500 @@
+# Module 2: The Digital Twin - Content Schema
+# This schema defines the structure of Module 2 lessons and labs
+
+openapi: 3.0.3
+info:
+  title: Module 2 Content Schema
+  description: Schema for Digital Twin (Gazebo & Unity) module content
+  version: 1.0.0
+
+components:
+  schemas:
+    Lesson:
+      type: object
+      required:
+        - lesson_number
+        - title
+        - learning_objectives
+        - sections
+        - estimated_duration
+      properties:
+        lesson_number:
+          type: integer
+          minimum: 1
+          maximum: 3
+          description: Lesson number within Module 2
+        title:
+          type: string
+          maxLength: 100
+          description: Lesson title
+        learning_objectives:
+          type: array
+          items:
+            type: string
+          minItems: 2
+          maxItems: 4
+          description: Measurable learning outcomes
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Section'
+          minItems: 2
+          maxItems: 5
+        estimated_duration:
+          type: string
+          pattern: '^\d+-\d+ (hours|minutes)$'
+          example: "45-60 minutes"
+        prerequisites:
+          type: array
+          items:
+            type: string
+          description: Required prior knowledge
+
+    Section:
+      type: object
+      required:
+        - section_id
+        - title
+        - content_type
+      properties:
+        section_id:
+          type: string
+          pattern: '^m2-l[1-3]-s[1-9]$'
+          example: "m2-l1-s1"
+        title:
+          type: string
+          maxLength: 80
+        content_type:
+          type: string
+          enum:
+            - conceptual
+            - diagram
+            - code_example
+            - hands_on
+            - comparison
+        mermaid_diagram:
+          $ref: '#/components/schemas/MermaidDiagram'
+        code_examples:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeExample'
+
+    MermaidDiagram:
+      type: object
+      required:
+        - diagram_id
+        - type
+        - source
+        - caption
+      properties:
+        diagram_id:
+          type: string
+          pattern: '^m2-diag-\d+$'
+        type:
+          type: string
+          enum:
+            - flowchart
+            - sequence
+            - graph
+            - stateDiagram
+        source:
+          type: string
+          description: Mermaid diagram code
+        caption:
+          type: string
+          maxLength: 150
+
+    CodeExample:
+      type: object
+      required:
+        - example_id
+        - language
+        - code
+      properties:
+        example_id:
+          type: string
+        language:
+          type: string
+          enum:
+            - python
+            - xml
+            - yaml
+            - bash
+        code:
+          type: string
+          maxLength: 2000
+        caption:
+          type: string
+        runnable:
+          type: boolean
+          default: false
+
+    Lab:
+      type: object
+      required:
+        - lab_id
+        - title
+        - objective
+        - duration_minutes
+        - steps
+        - deliverable
+      properties:
+        lab_id:
+          type: string
+          pattern: '^m2-lab-\d+$'
+        title:
+          type: string
+          maxLength: 60
+        objective:
+          type: string
+          maxLength: 200
+        duration_minutes:
+          type: integer
+          minimum: 30
+          maximum: 150
+        prerequisites:
+          type: array
+          items:
+            type: string
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabStep'
+          minItems: 4
+          maxItems: 10
+        deliverable:
+          type: string
+          description: What student submits for this lab
+        validation_script:
+          type: string
+          description: Path to validation script
+
+    LabStep:
+      type: object
+      required:
+        - step_number
+        - instruction
+      properties:
+        step_number:
+          type: integer
+          minimum: 1
+        instruction:
+          type: string
+          maxLength: 500
+        code_block:
+          type: string
+        expected_output:
+          type: string
+        hint:
+          type: string
+
+    SimulationWorld:
+      type: object
+      required:
+        - world_id
+        - name
+        - sdf_version
+      properties:
+        world_id:
+          type: string
+          pattern: '^m2-world-\w+$'
+        name:
+          type: string
+          maxLength: 50
+        sdf_version:
+          type: string
+          enum:
+            - "1.8"
+            - "1.9"
+            - "1.10"
+        physics_engine:
+          type: string
+          enum:
+            - ode
+            - bullet
+            - dart
+            - tpe
+          default: ode
+        physics_params:
+          $ref: '#/components/schemas/PhysicsParams'
+        models:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorldModel'
+        sensors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SimulatedSensor'
+
+    PhysicsParams:
+      type: object
+      properties:
+        gravity:
+          type: number
+          default: -9.8
+        max_step_size:
+          type: number
+          default: 0.001
+        real_time_factor:
+          type: number
+          default: 1.0
+
+    WorldModel:
+      type: object
+      required:
+        - model_name
+        - model_type
+      properties:
+        model_name:
+          type: string
+        model_type:
+          type: string
+          enum:
+            - ground_plane
+            - box
+            - cylinder
+            - sphere
+            - urdf_robot
+            - custom_mesh
+        pose:
+          type: string
+          description: "x y z roll pitch yaw"
+        static:
+          type: boolean
+          default: true
+
+    SimulatedSensor:
+      type: object
+      required:
+        - sensor_id
+        - sensor_type
+        - topic_name
+      properties:
+        sensor_id:
+          type: string
+        sensor_type:
+          type: string
+          enum:
+            - camera
+            - depth_camera
+            - lidar
+            - imu
+        topic_name:
+          type: string
+          pattern: '^/[a-z_/]+$'
+        update_rate:
+          type: number
+          minimum: 1
+          maximum: 100
+          default: 30
+        ros_message_type:
+          type: string
+          enum:
+            - sensor_msgs/Image
+            - sensor_msgs/PointCloud2
+            - sensor_msgs/LaserScan
+            - sensor_msgs/Imu
+
+    Quiz:
+      type: object
+      required:
+        - quiz_id
+        - questions
+        - passing_score
+      properties:
+        quiz_id:
+          type: string
+          pattern: '^m2-quiz$'
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizQuestion'
+          minItems: 8
+          maxItems: 12
+        passing_score:
+          type: integer
+          minimum: 60
+          maximum: 100
+          default: 80
+
+    QuizQuestion:
+      type: object
+      required:
+        - question_id
+        - question_text
+        - learning_outcome
+        - answer
+      properties:
+        question_id:
+          type: string
+          pattern: '^m2-q\d+$'
+        question_text:
+          type: string
+          maxLength: 300
+        question_type:
+          type: string
+          enum:
+            - multiple_choice
+            - true_false
+            - short_answer
+          default: multiple_choice
+        options:
+          type: array
+          items:
+            type: string
+          minItems: 2
+          maxItems: 4
+        answer:
+          type: string
+        learning_outcome:
+          type: string
+          pattern: '^LO-0[1-5]$'
+          description: Maps to Module 2 learning outcome
+
+    Citation:
+      type: object
+      required:
+        - citation_id
+        - authors
+        - year
+        - title
+        - source
+      properties:
+        citation_id:
+          type: string
+          pattern: '^m2-cite-\d+$'
+        authors:
+          type: string
+        year:
+          type: integer
+          minimum: 2012
+          maximum: 2025
+        title:
+          type: string
+        source:
+          type: string
+        url:
+          type: string
+          format: uri
+        apa_formatted:
+          type: string
+          description: Complete APA 7th edition citation
+
+# Module 2 Content Instance
+x-module2-content:
+  lessons:
+    - lesson_number: 1
+      title: "Digital Twin & Physics Simulation"
+      learning_objectives:
+        - "Explain the digital twin concept and its role in robotics development"
+        - "Understand physics simulation fundamentals (gravity, collisions, joints)"
+      sections:
+        - section_id: "m2-l1-s1"
+          title: "What is a Digital Twin?"
+          content_type: conceptual
+        - section_id: "m2-l1-s2"
+          title: "Physics Simulation Fundamentals"
+          content_type: conceptual
+        - section_id: "m2-l1-s3"
+          title: "Simulation Pipeline Overview"
+          content_type: diagram
+      estimated_duration: "45-60 minutes"
+      prerequisites:
+        - "Module 1 completion"
+        - "URDF fundamentals"
+
+    - lesson_number: 2
+      title: "Gazebo Simulation Workflows"
+      learning_objectives:
+        - "Configure and launch Gazebo with ROS 2"
+        - "Create custom world files using SDF format"
+        - "Control robots in simulation via ROS 2 topics"
+      sections:
+        - section_id: "m2-l2-s1"
+          title: "Gazebo Architecture"
+          content_type: diagram
+        - section_id: "m2-l2-s2"
+          title: "World Files and SDF"
+          content_type: code_example
+        - section_id: "m2-l2-s3"
+          title: "ROS 2 Integration with ros_gz"
+          content_type: hands_on
+      estimated_duration: "60-90 minutes"
+      prerequisites:
+        - "Lesson 1"
+        - "Gazebo Fortress installed"
+
+    - lesson_number: 3
+      title: "Unity Visualization & Sensor Simulation"
+      learning_objectives:
+        - "Understand Unity's role in high-fidelity robotics visualization"
+        - "Configure and use simulated sensors in Gazebo"
+        - "Compare Gazebo and Unity for different use cases"
+      sections:
+        - section_id: "m2-l3-s1"
+          title: "Unity for Robotics Overview"
+          content_type: conceptual
+        - section_id: "m2-l3-s2"
+          title: "Gazebo vs Unity Comparison"
+          content_type: comparison
+        - section_id: "m2-l3-s3"
+          title: "Simulated Sensors Configuration"
+          content_type: hands_on
+        - section_id: "m2-l3-s4"
+          title: "Sensor Data Pipelines"
+          content_type: diagram
+      estimated_duration: "60-75 minutes"
+      prerequisites:
+        - "Lesson 2"
+        - "RViz2 familiarity"
+
+  labs:
+    - lab_id: "m2-lab-1"
+      title: "Physics Experiments in Gazebo"
+      objective: "Observe robot behavior under different physics settings"
+      duration_minutes: 60
+      deliverable: "Physics observation report with screenshots"
+
+    - lab_id: "m2-lab-2"
+      title: "Building Simulation Worlds"
+      objective: "Create a custom Gazebo world with obstacles and physics"
+      duration_minutes: 90
+      deliverable: "Custom SDF world file with 3+ obstacles"
+
+    - lab_id: "m2-lab-3"
+      title: "Sensor Configuration and Visualization"
+      objective: "Configure camera, LiDAR, and IMU sensors; visualize in RViz2"
+      duration_minutes: 90
+      deliverable: "Robot model with 3 sensors publishing to ROS 2"
+
+  required_diagrams:
+    - diagram_id: "m2-diag-1"
+      type: flowchart
+      title: "Simulation Pipeline"
+      description: "URDF/SDF → Gazebo → Physics Engine → Sensors → ros_gz → ROS 2"
+
+    - diagram_id: "m2-diag-2"
+      type: sequence
+      title: "Sensor Raycasting Flow"
+      description: "How sensor data flows from physics to ROS 2 topics"
+
+    - diagram_id: "m2-diag-3"
+      type: graph
+      title: "Gazebo vs Unity Comparison"
+      description: "Side-by-side feature comparison chart"
+
+  citations:
+    - citation_id: "m2-cite-1"
+      apa_formatted: "Grieves, M., & Vickers, J. (2017). Digital twin: Mitigating unpredictable, undesirable emergent behavior in complex systems. In Transdisciplinary perspectives on complex systems (pp. 85-113). Springer."
+
+    - citation_id: "m2-cite-2"
+      apa_formatted: "Open Robotics. (2024). Gazebo Sim: User guide. https://gazebosim.org/docs"
+
+    - citation_id: "m2-cite-3"
+      apa_formatted: "Collins, J., Chand, S., Vanderkop, A., & Howard, D. (2021). A review of physics simulators for robotic applications. IEEE Access, 9, 51416-51431."
+
+    - citation_id: "m2-cite-4"
+      apa_formatted: "Mittal, M., Yu, C., Yu, Q., Liu, J., Rudin, N., Hoeller, D., ... & Hutter, M. (2023). Orbit: A unified simulation framework for interactive robot learning. IEEE Robotics and Automation Letters, 8(6), 3740-3747."
+
+    - citation_id: "m2-cite-5"
+      apa_formatted: "Unity Technologies. (2024). Unity Robotics Hub: ROS-Unity integration. https://github.com/Unity-Technologies/Unity-Robotics-Hub"

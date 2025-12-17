@@ -1,0 +1,252 @@
+.quizContainer {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.progressBar {
+  height: 6px;
+  background-color: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: #4a4a4a;
+  transition: width 0.3s ease;
+}
+
+.questionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.questionNumber {
+  font-weight: 500;
+}
+
+.scoreDisplay {
+  font-weight: 600;
+  color: #4a4a4a;
+}
+
+.questionCard {
+  background-color: #f8f8f8;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+[data-theme='dark'] .questionCard {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+.questionText {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.optionsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+[data-theme='dark'] .option {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+
+.option:hover:not(:disabled) {
+  border-color: #4a4a4a;
+  background-color: #f0f0f0;
+}
+
+[data-theme='dark'] .option:hover:not(:disabled) {
+  background-color: #333333;
+}
+
+.option:disabled {
+  cursor: default;
+}
+
+.optionLetter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  background-color: #4a4a4a;
+  color: white;
+  border-radius: 50%;
+  margin-right: 1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.selected {
+  border-color: #4a4a4a;
+  background-color: #f0f0f0;
+}
+
+.correct {
+  border-color: #22c55e;
+  background-color: #dcfce7;
+}
+
+[data-theme='dark'] .correct {
+  background-color: rgba(34, 197, 94, 0.2);
+}
+
+.correct .optionLetter {
+  background-color: #22c55e;
+}
+
+.incorrect {
+  border-color: #ef4444;
+  background-color: #fee2e2;
+}
+
+[data-theme='dark'] .incorrect {
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+.incorrect .optionLetter {
+  background-color: #ef4444;
+}
+
+.explanation {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #e8f4fd;
+  border-left: 4px solid #4a4a4a;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+[data-theme='dark'] .explanation {
+  background-color: rgba(74, 74, 74, 0.2);
+}
+
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.navButton {
+  padding: 0.75rem 1.5rem;
+  background-color: #4a4a4a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.navButton:hover:not(:disabled) {
+  background-color: #333333;
+}
+
+.navButton:disabled {
+  background-color: #b0b0b0;
+  cursor: not-allowed;
+}
+
+/* Result Card */
+.resultCard {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f8f8f8;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+}
+
+[data-theme='dark'] .resultCard {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+.resultCard h2 {
+  margin-bottom: 1.5rem;
+  color: #2d2d2d;
+}
+
+[data-theme='dark'] .resultCard h2 {
+  color: #e0e0e0;
+}
+
+.scoreCircle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4a4a4a, #2d2d2d);
+  margin-bottom: 1.5rem;
+}
+
+.scoreNumber {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+}
+
+.scoreText {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.feedbackText {
+  font-size: 0.95rem;
+  color: #4a4a4a;
+  margin-bottom: 1.5rem;
+}
+
+[data-theme='dark'] .feedbackText {
+  color: #b0b0b0;
+}
+
+.restartButton {
+  padding: 0.75rem 2rem;
+  background-color: #4a4a4a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.restartButton:hover {
+  background-color: #333333;
+}

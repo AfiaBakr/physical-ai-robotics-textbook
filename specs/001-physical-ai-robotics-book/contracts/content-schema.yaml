@@ -1,0 +1,444 @@
+# Content Schema Contract: Physical AI & Humanoid Robotics Textbook
+# Version: 1.0.0
+# Purpose: Define structure and validation rules for textbook content
+
+# ============================================================================
+# CHAPTER SCHEMA
+# ============================================================================
+
+Chapter:
+  type: object
+  required:
+    - chapter_number
+    - title
+    - learning_objectives
+    - estimated_duration
+    - content_sections
+    - lab_exercises
+    - assessment
+  properties:
+    chapter_number:
+      type: integer
+      minimum: 1
+      maximum: 15
+      description: Sequential chapter number
+      example: 2
+
+    title:
+      type: string
+      minLength: 5
+      maxLength: 100
+      description: Descriptive chapter title
+      example: "The Robotic Nervous System (ROS 2)"
+
+    learning_objectives:
+      type: array
+      minItems: 3
+      maxItems: 5
+      items:
+        type: string
+        pattern: "^(Explain|Describe|Demonstrate|Create|Implement|Analyze|Compare).*"
+      description: Measurable learning outcomes starting with action verbs
+      example:
+        - "Explain the role of ROS 2 in robot control systems"
+        - "Create functional publisher and subscriber nodes"
+        - "Demonstrate topic-based communication patterns"
+
+    estimated_duration:
+      type: string
+      pattern: "^Week [0-9]+-[0-9]+.*"
+      description: Time investment in weeks
+      example: "Week 3-4 (5-7 hours)"
+
+    prerequisites:
+      type: array
+      items:
+        type: integer
+        description: Chapter numbers that must be completed first
+      example: [1]
+
+    content_sections:
+      type: array
+      minItems: 5
+      items:
+        $ref: "#/Section"
+
+    lab_exercises:
+      type: array
+      minItems: 1
+      items:
+        $ref: "#/LabExercise"
+
+    assessment:
+      $ref: "#/Assessment"
+
+    citations:
+      type: array
+      minItems: 1
+      items:
+        $ref: "#/Citation"
+
+# ============================================================================
+# SECTION SCHEMA
+# ============================================================================
+
+Section:
+  type: object
+  required:
+    - section_id
+    - title
+    - content
+  properties:
+    section_id:
+      type: string
+      pattern: "^ch[0-9]{2}-s[0-9]{2}-[a-z-]+$"
+      description: Unique section identifier
+      example: "ch02-s03-topics"
+
+    title:
+      type: string
+      description: Section heading
+      example: "ROS 2 Fundamentals - Topics"
+
+    content:
+      type: string
+      minLength: 200
+      maxLength: 2000
+      description: Section content in MDX format (500-1200 words recommended)
+
+    diagrams:
+      type: array
+      items:
+        $ref: "#/Diagram"
+
+    code_examples:
+      type: array
+      items:
+        $ref: "#/CodeExample"
+
+    callouts:
+      type: array
+      items:
+        type: object
+        properties:
+          type:
+            enum: [tip, note, warning, danger]
+          content:
+            type: string
+
+# ============================================================================
+# LAB EXERCISE SCHEMA
+# ============================================================================
+
+LabExercise:
+  type: object
+  required:
+    - lab_id
+    - title
+    - objective
+    - estimated_time
+    - steps
+    - validation_script
+  properties:
+    lab_id:
+      type: string
+      pattern: "^lab-[0-9]{2}-[0-9]{2}-[a-z-]+$"
+      description: Unique lab identifier
+      example: "lab-02-01-pubsub"
+
+    title:
+      type: string
+      example: "Publisher-Subscriber Communication"
+
+    objective:
+      type: string
+      minLength: 20
+      maxLength: 200
+      description: Clear statement of what student will accomplish
+      example: "Create a ROS 2 publisher and subscriber to exchange messages"
+
+    prerequisites:
+      type: array
+      items:
+        type: string
+        description: Prior lab IDs required
+
+    estimated_time:
+      type: integer
+      minimum: 60
+      maximum: 180
+      description: Time in minutes (must be 1-3 hours per SC-009)
+      example: 90
+
+    starter_code_url:
+      type: string
+      format: uri
+      description: GitHub link to starter code
+      example: "https://github.com/user/repo/tree/main/labs/lab-02-01-pubsub/starter"
+
+    steps:
+      type: array
+      minItems: 5
+      maxItems: 10
+      items:
+        type: object
+        properties:
+          step_number:
+            type: integer
+          instruction:
+            type: string
+          expected_output:
+            type: string
+
+    validation_script:
+      type: string
+      description: Path to automated test script
+      example: "labs/lab-02-01-pubsub/validate.py"
+
+    extensions:
+      type: array
+      items:
+        type: string
+        description: Optional advanced challenges
+
+# ============================================================================
+# CODE EXAMPLE SCHEMA
+# ============================================================================
+
+CodeExample:
+  type: object
+  required:
+    - example_id
+    - language
+    - code
+    - caption
+  properties:
+    example_id:
+      type: string
+      pattern: "^[a-z0-9-]+$"
+      example: "ros2-minimal-publisher"
+
+    language:
+      enum: [python, cpp, xml, bash, yaml]
+      description: Programming language for syntax highlighting
+
+    code:
+      type: string
+      minLength: 10
+      maxLength: 1000
+      description: Code snippet (10-30 lines recommended for in-textbook)
+
+    caption:
+      type: string
+      description: Brief explanation of what code demonstrates
+      example: "Minimal ROS 2 publisher node using rclpy"
+
+    highlights:
+      type: array
+      items:
+        type: object
+        properties:
+          start_line:
+            type: integer
+          end_line:
+            type: integer
+      description: Lines to emphasize in rendering
+
+    runnable:
+      type: boolean
+      description: Whether example can be executed standalone
+      default: true
+
+# ============================================================================
+# DIAGRAM SCHEMA
+# ============================================================================
+
+Diagram:
+  type: object
+  required:
+    - diagram_id
+    - type
+    - source
+    - caption
+    - alt_text
+  properties:
+    diagram_id:
+      type: string
+      pattern: "^diagram-[a-z0-9-]+$"
+      example: "diagram-ros2-pubsub-flow"
+
+    type:
+      enum: [mermaid_flowchart, mermaid_sequence, mermaid_graph, svg, screenshot]
+
+    source:
+      type: string
+      description: Mermaid code, SVG path, or image path
+
+    caption:
+      type: string
+      example: "Figure 2.1: Publisher-subscriber message flow"
+
+    alt_text:
+      type: string
+      description: Accessibility description for screen readers
+
+# ============================================================================
+# CITATION SCHEMA
+# ============================================================================
+
+Citation:
+  type: object
+  required:
+    - citation_id
+    - type
+    - authors
+    - year
+    - title
+    - source
+  properties:
+    citation_id:
+      type: string
+      pattern: "^[a-z]+[0-9]{4}[a-z]?$"
+      example: "brooks1999"
+
+    type:
+      enum: [journal_article, conference_paper, technical_doc, book, website]
+
+    authors:
+      type: array
+      minItems: 1
+      items:
+        type: string
+        description: Author name in "Last, First" format
+      example: ["Brooks, Rodney A."]
+
+    year:
+      type: integer
+      minimum: 2013
+      maximum: 2025
+      description: Publication year (last 12 years per SC-008)
+
+    title:
+      type: string
+
+    source:
+      type: string
+      description: Journal name, conference, publisher, or URL
+
+    doi_or_url:
+      type: string
+      description: Digital object identifier or web link
+
+# ============================================================================
+# ASSESSMENT SCHEMA
+# ============================================================================
+
+Assessment:
+  type: object
+  required:
+    - assessment_id
+    - type
+    - questions
+    - passing_threshold
+  properties:
+    assessment_id:
+      type: string
+      pattern: "^assess-ch[0-9]{2}$"
+      example: "assess-ch02"
+
+    type:
+      enum: [quiz, knowledge_check, practical_demo]
+
+    questions:
+      type: array
+      minItems: 5
+      maxItems: 10
+      items:
+        type: object
+        properties:
+          question_id:
+            type: string
+          question_text:
+            type: string
+          question_type:
+            enum: [multiple_choice, true_false, short_answer, code_completion]
+          options:
+            type: array
+            items:
+              type: string
+          correct_answer:
+            type: string
+
+    passing_threshold:
+      type: integer
+      minimum: 70
+      maximum: 90
+      description: Percentage required to pass (typically 80%)
+      default: 80
+
+    time_limit:
+      type: integer
+      description: Time in minutes (null for untimed)
+
+# ============================================================================
+# HARDWARE/SOFTWARE REQUIREMENT SCHEMA
+# ============================================================================
+
+HardwareSoftwareRequirement:
+  type: object
+  required:
+    - requirement_id
+    - tier
+    - category
+    - name
+    - version
+  properties:
+    requirement_id:
+      type: string
+      example: "req-ros2-humble"
+
+    tier:
+      enum: [minimum, recommended, cloud_alternative]
+
+    category:
+      enum: [hardware, operating_system, software, library]
+
+    name:
+      type: string
+      example: "ROS 2 Humble Hawksbill"
+
+    version:
+      type: string
+      example: ">=2023.1.0"
+
+    description:
+      type: string
+
+    installation_url:
+      type: string
+      format: uri
+
+# ============================================================================
+# VALIDATION RULES
+# ============================================================================
+
+ValidationRules:
+  content_quality:
+    - All code examples must be tested and run successfully (SC-012)
+    - Total word count: 5000-7000 words (FR-014)
+    - Mermaid/SVG diagrams must render correctly (FR-009)
+
+  educational_structure:
+    - Minimum 10 chapters (FR-007)
+    - Each chapter must have at least 1 lab (FR-008, SC-009)
+    - Labs must be 60-180 minutes (SC-009)
+
+  citations:
+    - Minimum 15 APA-style citations (FR-011)
+    - Majority from last 12 years (SC-008)
+    - Mix of peer-reviewed and technical documentation
+
+  accessibility:
+    - All diagrams must have alt text
+    - All code examples must have captions
+    - Prerequisite chains must be clearly defined

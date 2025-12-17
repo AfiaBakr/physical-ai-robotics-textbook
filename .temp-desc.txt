@@ -1,0 +1,46 @@
+# Title:
+"Physical AI & Humanoid Robotics"
+
+## Target audience:
+Students, instructors, and developers learning AI systems that operate in the physical world, including robotics, embodied intelligence, simulation pipelines, and humanoid robot control.
+
+## Focus:
+The foundations and practical pipeline of Physical AI—AI systems that interact with reality—and how to design, simulate, and control humanoid robots using ROS 2, Gazebo/Unity, and NVIDIA Isaac.
+
+# Success criteria
+    - Provides a complete end-to-end textbook for a capstone course on Physical AI
+    - Clearly explains the bridge between digital intelligence → physical embodiment
+    - Covers ROS 2, Gazebo/Unity simulation, NVIDIA Isaac, VLA   (Vision–Language–Action)
+    - Includes 10+ structured chapters aligned with the quarter/week breakdown
+    - Includes APA-style citations with 15+ credible sources
+    - Reader can understand and reproduce:
+        - ROS 2 node architectures
+        - Gazebo/Unity physics simulations
+        - Isaac Sim perception models
+        - VLA planning and control flows
+    - Includes diagrams/flowcharts for robotic systems (Mermaid/SVG)
+    - Book builds successfully in Docusaurus and deploys to GitHub Pages
+
+# Constraints
+    - Word count: 5,000–7,000 words
+    - Format: Markdown/MDX for Docusaurus
+    - Citations: APA
+
+   ## Sources:
+        - Peer-reviewed or authoritative robotics/AI papers
+        - Technical documentation (ROS, Gazebo, Isaac, Unity)
+        - Minimum 15 sources, majority recent (past 10–12 years)
+
+  ## Must include:
+        - Fundamentals of Physical AI
+        - Humanoid robot anatomy & mechanics
+        - Overview of Physical AI & Embodied Intelligence
+        - Module sections (ROS 2, Gazebo/Unity, Isaac, VLA)
+        - 2 to 3 chapters
+        - Weekly educational structure
+        - Hardware requirements summary
+        - Capstone project: Autonomous Humanoid Robot
+        - Practical labs, diagrams & examples
+        - Real-world applications and practice tasks
+
+# Not building

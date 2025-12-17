@@ -1,0 +1,182 @@
+# Educational Content Interface Specification
+# For Isaac AI Robot Brain Module (NVIDIA Isaac)
+
+openapi: 3.0.0
+info:
+  title: Educational Content Interface for Isaac AI Robot Brain Module
+  description: Interface specification for educational content delivery and interaction
+  version: 1.0.0
+
+paths: {}
+
+components:
+  schemas:
+    Lesson:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the lesson
+        title:
+          type: string
+          description: Lesson title
+        objectives:
+          type: array
+          items:
+            type: string
+          description: Learning objectives for the lesson
+        content:
+          type: string
+          description: Main content in markdown format
+        duration:
+          type: integer
+          description: Estimated completion time in minutes
+        prerequisites:
+          type: array
+          items:
+            type: string
+          description: Required knowledge or completed lessons
+        related_labs:
+          type: array
+          items:
+            type: string
+          description: IDs of related lab exercises
+        diagrams:
+          type: array
+          items:
+            type: string
+          description: IDs of diagrams used in the lesson
+
+    LabExercise:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the lab
+        title:
+          type: string
+          description: Lab title
+        objectives:
+          type: array
+          items:
+            type: string
+          description: Learning objectives for the lab
+        steps:
+          type: array
+          items:
+            type: string
+          description: Sequential steps to complete the lab
+        expected_outcome:
+          type: string
+          description: Description of successful completion
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced]
+          description: Difficulty level of the lab
+        estimated_time:
+          type: integer
+          description: Time needed in minutes
+        required_tools:
+          type: array
+          items:
+            type: string
+          description: Tools needed for the lab
+        validation_criteria:
+          type: array
+          items:
+            type: string
+          description: How to verify success
+
+    IsaacSimScene:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the scene
+        name:
+          type: string
+          description: Scene name
+        description:
+          type: string
+          description: What the scene is designed for
+        robot_model:
+          type: string
+          description: URDF model used in the scene
+        sensors_configured:
+          type: array
+          items:
+            type: string
+          description: Sensors available in the scene
+        navigation_goals:
+          type: array
+          items:
+            type: object
+            properties:
+              position:
+                type: object
+                properties:
+                  x:
+                    type: number
+                  y:
+                    type: number
+                  z:
+                    type: number
+              description:
+                type: string
+        assets_path:
+          type: string
+          description: Path to scene assets
+
+    Assessment:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the assessment
+        type:
+          type: string
+          enum: [quiz, review, practical, conceptual]
+          description: Type of assessment
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Question'
+        learning_outcome_alignment:
+          type: array
+          items:
+            type: string
+          description: IDs of learning outcomes addressed
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced]
+          description: Difficulty level of the assessment
+        time_limit:
+          type: integer
+          description: Time limit in minutes, if applicable
+
+    Question:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the question
+        text:
+          type: string
+          description: The question text
+        type:
+          type: string
+          enum: [multiple_choice, true_false, short_answer, practical_task]
+          description: Type of question
+        options:
+          type: array
+          items:
+            type: string
+          description: Options for multiple choice questions
+        correct_answer:
+          type: array
+          items:
+            type: string
+          description: The correct answer(s)
+        explanation:
+          type: string
+          description: Explanation of the correct answer

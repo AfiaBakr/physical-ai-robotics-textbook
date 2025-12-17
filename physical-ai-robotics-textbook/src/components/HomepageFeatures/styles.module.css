@@ -1,0 +1,281 @@
+/**
+ * Homepage Features Module CSS
+ * Professional Black Shiny & Golden Theme
+ */
+
+.features {
+  display: flex;
+  align-items: center;
+  padding: 6rem 0;
+  width: 100%;
+  background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background decoration */
+.features::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 10% 90%, rgba(212, 175, 55, 0.05) 0%, transparent 30%),
+    radial-gradient(circle at 90% 10%, rgba(212, 175, 55, 0.03) 0%, transparent 30%);
+  pointer-events: none;
+}
+
+:global([data-theme='dark']) .features {
+  background: linear-gradient(180deg, #121212 0%, #0a0a0a 100%);
+}
+
+:global([data-theme='dark']) .features::before {
+  background:
+    radial-gradient(circle at 10% 90%, rgba(212, 175, 55, 0.08) 0%, transparent 30%),
+    radial-gradient(circle at 90% 10%, rgba(212, 175, 55, 0.05) 0%, transparent 30%);
+}
+
+/* Feature Icon */
+.featureIcon {
+  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, #B8860B 0%, #D4AF37 50%, #F4D03F 100%);
+  border-radius: 50%;
+  box-shadow:
+    0 8px 30px rgba(212, 175, 55, 0.3),
+    0 0 40px rgba(212, 175, 55, 0.1),
+    inset 0 -3px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s ease;
+  position: relative;
+}
+
+/* Glow ring effect */
+.featureIcon::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: 50%;
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+
+.featureIcon:hover {
+  transform: scale(1.1) translateY(-5px);
+  box-shadow:
+    0 15px 40px rgba(212, 175, 55, 0.4),
+    0 0 60px rgba(212, 175, 55, 0.2);
+}
+
+.featureIcon:hover::before {
+  opacity: 1;
+  animation: pulseRing 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseRing {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+}
+
+/* Feature Card */
+.featureCard {
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  border: 1px solid #e9ecef;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  margin: 1rem;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+:global([data-theme='dark']) .featureCard {
+  background: linear-gradient(145deg, #242424 0%, #1a1a1a 100%);
+  border-color: #2d2d2d;
+}
+
+/* Top accent line */
+.featureCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #B8860B 0%, #D4AF37 50%, #B8860B 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* Hover glow effect */
+.featureCard::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 2px rgba(212, 175, 55, 0);
+  transition: box-shadow 0.4s ease;
+  pointer-events: none;
+}
+
+.featureCard:hover {
+  transform: translateY(-10px);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.1),
+    0 0 30px rgba(212, 175, 55, 0.1);
+}
+
+:global([data-theme='dark']) .featureCard:hover {
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(212, 175, 55, 0.15);
+}
+
+.featureCard:hover::before {
+  opacity: 1;
+}
+
+.featureCard:hover::after {
+  box-shadow: inset 0 0 0 2px rgba(212, 175, 55, 0.3);
+}
+
+/* Feature Title */
+.featureTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 1rem;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+:global([data-theme='dark']) .featureTitle {
+  color: #F4D03F;
+}
+
+.featureCard:hover .featureTitle {
+  color: #B8860B;
+}
+
+:global([data-theme='dark']) .featureCard:hover .featureTitle {
+  color: #FFD700;
+}
+
+/* Feature Description */
+.featureDescription {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #6c757d;
+  margin: 0;
+}
+
+:global([data-theme='dark']) .featureDescription {
+  color: #adb5bd;
+}
+
+/* Section Title */
+.sectionTitle {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.sectionTitle h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #212529;
+  margin-bottom: 1rem;
+}
+
+:global([data-theme='dark']) .sectionTitle h2 {
+  color: #D4AF37;
+}
+
+.sectionTitle p {
+  font-size: 1.25rem;
+  color: #6c757d;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+:global([data-theme='dark']) .sectionTitle p {
+  color: #adb5bd;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 996px) {
+  .features {
+    padding: 4rem 0;
+  }
+
+  .featureCard {
+    margin: 0.5rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .featureIcon {
+    width: 70px;
+    height: 70px;
+    font-size: 2.5rem;
+  }
+
+  .featureTitle {
+    font-size: 1.25rem;
+  }
+
+  .sectionTitle h2 {
+    font-size: 2rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .features {
+    padding: 3rem 0;
+  }
+
+  .featureCard {
+    margin: 0.75rem 0;
+  }
+
+  .featureIcon {
+    width: 64px;
+    height: 64px;
+    font-size: 2rem;
+  }
+
+  .featureTitle {
+    font-size: 1.125rem;
+  }
+
+  .featureDescription {
+    font-size: 0.9rem;
+  }
+
+  .sectionTitle h2 {
+    font-size: 1.75rem;
+  }
+
+  .sectionTitle p {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+}
