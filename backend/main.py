@@ -492,5 +492,231 @@ def main():
         raise
 
 
+# =============================================================================
+# RETRIEVAL PIPELINE FUNCTIONS (Spec-002)
+# =============================================================================
+
+# Constants for retrieval
+MAX_QUERY_LENGTH = 10000  # Maximum query length in characters
+MAX_K = 100  # Maximum number of results to return
+DEFAULT_K = 5  # Default number of results
+
+
+@backoff.on_exception(backoff.expo, Exception, max_tries=3)
+def embed_query(query: str) -> List[float]:
+    """
+    Generate a vector embedding for a search query using Cohere.
+
+    Args:
+        query (str): The natural language query string
+
+    Returns:
+        List[float]: 768-dimensional embedding vector
+
+    Raises:
+        ValueError: If query is empty or exceeds maximum length
+        Exception: If Cohere API call fails after retries
+
+    Example:
+        >>> embedding = embed_query("What is a digital twin?")
+        >>> len(embedding)
+        768
+    """
+    # Validate query
+    if not query or not query.strip():
+        raise ValueError("Query cannot be empty")
+
+    query = query.strip()
+
+    if len(query) > MAX_QUERY_LENGTH:
+        logger.warning(f"Query exceeds maximum length ({len(query)} > {MAX_QUERY_LENGTH}), truncating")
+        query = query[:MAX_QUERY_LENGTH]
+
+    # Use search_query input_type for query embeddings (different from document)
+    response = co.embed(
+        texts=[query],
+        model='multilingual-22-12',
+        input_type="search_query"
+    )
+
+    return response.embeddings[0]
+
+
+def search_qdrant(query_embedding: List[float], k: int = DEFAULT_K) -> List[models.ScoredPoint]:
+    """
+    Perform Top-K similarity search in Qdrant.
+
+    Args:
+        query_embedding (List[float]): 768-dimensional query vector
+        k (int): Number of results to return (default: 5)
+
+    Returns:
+        List[ScoredPoint]: Ordered list of scored points with payloads
+
+    Raises:
+        ValueError: If k is not positive or embedding dimension mismatch
+        Exception: If Qdrant connection fails
+
+    Example:
+        >>> results = search_qdrant(embedding, k=3)
+        >>> len(results) <= 3
+        True
+        >>> results[0].score >= results[1].score  # Ordered by score
+        True
+    """
+    # Validate k
+    if not isinstance(k, int) or k < 1:
+        raise ValueError("k must be a positive integer")
+
+    if k > MAX_K:
+        logger.warning(f"k exceeds maximum ({k} > {MAX_K}), capping to {MAX_K}")
+        k = MAX_K
+
+    # Validate embedding dimension
+    if len(query_embedding) != 768:
+        raise ValueError(f"Embedding dimension mismatch: expected 768, got {len(query_embedding)}")
+
+    # Perform search
+    results = qdrant_client.search(
+        collection_name="rag_embeddings",
+        query_vector=query_embedding,
+        limit=k,
+        with_payload=True
+    )
+
+    # Results are already ordered by score descending by Qdrant
+    return results
+
+
+def format_results(results: List[models.ScoredPoint], query: str, k: int) -> Dict[str, Any]:
+    """
+    Format Qdrant search results into standardized JSON response.
+
+    Args:
+        results (List[ScoredPoint]): Raw search results from Qdrant
+        query (str): Original query string
+        k (int): Requested number of results
+
+    Returns:
+        Dict[str, Any]: Formatted response matching QueryResponse schema
+
+    Example:
+        >>> response = format_results(results, "test query", 5)
+        >>> response.keys()
+        dict_keys(['query', 'k', 'results', 'total_results', 'timestamp'])
+    """
+    formatted_results = []
+
+    for point in results:
+        payload = point.payload or {}
+
+        # Extract text content - exact match from stored content
+        chunk_text = payload.get('text_content', '')
+
+        # Extract source URL
+        url = payload.get('source_url', '')
+
+        # Generate unique chunk_id from point.id and chunk_index
+        chunk_index = payload.get('chunk_index', 0)
+        chunk_id = f"{point.id}_{chunk_index}"
+
+        # Get relevance score (already 0-1 from cosine similarity)
+        relevance_score = point.score
+
+        formatted_results.append({
+            'chunk_text': chunk_text,
+            'url': url,
+            'chunk_id': chunk_id,
+            'relevance_score': relevance_score
+        })
+
+    return {
+        'query': query,
+        'k': k,
+        'results': formatted_results,
+        'total_results': len(formatted_results),
+        'timestamp': datetime.now().isoformat()
+    }
+
+
+def create_error_response(error_message: str, error_code: str) -> Dict[str, Any]:
+    """
+    Create a standardized error response.
+
+    Args:
+        error_message (str): Human-readable error message
+        error_code (str): Machine-readable error code (INVALID_INPUT, SERVICE_UNAVAILABLE, INTERNAL_ERROR)
+
+    Returns:
+        Dict[str, Any]: Error response matching ErrorResponse schema
+    """
+    return {
+        'error': error_message,
+        'code': error_code,
+        'timestamp': datetime.now().isoformat()
+    }
+
+
+def retrieve(query: str, k: int = DEFAULT_K) -> Dict[str, Any]:
+    """
+    Execute complete retrieval pipeline: embed query, search, format results.
+
+    Args:
+        query (str): Natural language query string
+        k (int): Number of results to return (default: 5, max: 100)
+
+    Returns:
+        Dict[str, Any]: QueryResponse or ErrorResponse
+
+    Example:
+        >>> response = retrieve("What is reinforcement learning?", k=3)
+        >>> if 'error' not in response:
+        ...     print(f"Found {response['total_results']} results")
+    """
+    # Input validation
+    if not query or not query.strip():
+        return create_error_response("Query cannot be empty", "INVALID_INPUT")
+
+    query = query.strip()
+
+    if len(query) > MAX_QUERY_LENGTH:
+        return create_error_response(f"Query exceeds maximum length of {MAX_QUERY_LENGTH} characters", "INVALID_INPUT")
+
+    if not isinstance(k, int) or k < 1:
+        return create_error_response("k must be a positive integer", "INVALID_INPUT")
+
+    if k > MAX_K:
+        return create_error_response(f"k must be between 1 and {MAX_K}", "INVALID_INPUT")
+
+    try:
+        # Step 1: Generate query embedding
+        logger.info(f"Generating embedding for query: {query[:50]}...")
+        query_embedding = embed_query(query)
+
+        # Step 2: Search Qdrant
+        logger.info(f"Searching Qdrant for top-{k} matches...")
+        results = search_qdrant(query_embedding, k)
+
+        # Step 3: Format results
+        logger.info(f"Found {len(results)} results, formatting response...")
+        response = format_results(results, query, k)
+
+        return response
+
+    except ValueError as e:
+        logger.error(f"Validation error: {e}")
+        return create_error_response(str(e), "INVALID_INPUT")
+    except Exception as e:
+        logger.error(f"Service error during retrieval: {e}")
+        # Determine if it's Cohere or Qdrant error based on message
+        error_msg = str(e).lower()
+        if 'cohere' in error_msg or 'embed' in error_msg:
+            return create_error_response("Embedding service unavailable", "SERVICE_UNAVAILABLE")
+        elif 'qdrant' in error_msg or 'connection' in error_msg:
+            return create_error_response("Database service unavailable", "SERVICE_UNAVAILABLE")
+        else:
+            return create_error_response("An unexpected error occurred", "INTERNAL_ERROR")
+
+
 if __name__ == "__main__":
     main()

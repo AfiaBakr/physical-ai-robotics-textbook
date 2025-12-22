@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(git fetch:*)",
+      "Bash(if not exist \"I:\\\\Afia All Works\\\\Governer Generative AI Course\\\\GIAIC-Q4\\\\hackathons\\\\project-1\\\\specs\\\\003-rag-agent\\\\checklists\" mkdir \"I:\\\\Afia All Works\\\\Governer Generative AI Course\\\\GIAIC-Q4\\\\hackathons\\\\project-1\\\\specs\\\\003-rag-agent\\\\checklists\")",
+      "Bash(if not exist \"I:\\\\Afia All Works\\\\Governer Generative AI Course\\\\GIAIC-Q4\\\\hackathons\\\\project-1\\\\specs\\\\005-frontend-rag-integration\" mkdir \"I:\\\\Afia All Works\\\\Governer Generative AI Course\\\\GIAIC-Q4\\\\hackathons\\\\project-1\\\\specs\\\\005-frontend-rag-integration\")"
     ]
   }
 }
