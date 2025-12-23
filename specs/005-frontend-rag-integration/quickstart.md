@@ -123,7 +123,7 @@ For production, set this to your deployed backend URL.
 Ensure these are set in `backend/.env`:
 
 ```env
-OPENAI_API_KEY=your-key-here
+OPENROUTER_API_KEY=your-key-here
 QDRANT_URL=your-qdrant-url
 QDRANT_API_KEY=your-qdrant-key
 COHERE_API_KEY=your-cohere-key
