@@ -19,16 +19,28 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 import hashlib
 import backoff
+from pathlib import Path
 from dotenv import load_dotenv
 
 
-# Load environment variables from .env file
-load_dotenv()
+# Load environment variables from .env file (explicit path for Docker)
+env_path = Path(__file__).parent / '.env'
+if env_path.exists():
+    load_dotenv(env_path)
+else:
+    load_dotenv()  # Fallback to default behavior
 
 # Initialize clients
 COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+
+if not COHERE_API_KEY:
+    raise RuntimeError("COHERE_API_KEY not set")
+
+if not OPENROUTER_API_KEY:
+    raise RuntimeError("OPENROUTER_API_KEY not set")
 
 co = CohereClient(api_key=COHERE_API_KEY)
 qdrant_client = QdrantClient(

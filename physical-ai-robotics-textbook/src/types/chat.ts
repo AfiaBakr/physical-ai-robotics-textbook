@@ -118,7 +118,7 @@ export const CHAT_STORAGE_KEY = 'rag-chat-history';
 export const CHAT_STORAGE_VERSION = 1;
 
 export const DEFAULT_API_CONFIG: RAGApiConfig = {
-  baseUrl: 'https://afiabakr-deploy-chatbot.hf.space',
+  baseUrl: 'https://afiabakr-book-chatbot.hf.space',
   timeout: 10000,
 };
 

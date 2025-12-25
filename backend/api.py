@@ -53,6 +53,53 @@ async def health_check():
     }
 
 
+@app.get("/debug")
+async def debug_check():
+    """
+    Debug endpoint to check environment configuration.
+    """
+    import os
+    from main import QDRANT_URL, QDRANT_API_KEY, COHERE_API_KEY, OPENROUTER_API_KEY, qdrant_client, embed_query
+
+    qdrant_status = "unknown"
+    try:
+        collections = qdrant_client.get_collections()
+        qdrant_status = f"connected ({len(collections.collections)} collections)"
+    except Exception as e:
+        qdrant_status = f"error: {str(e)}"
+
+    embed_status = "unknown"
+    try:
+        test_embedding = embed_query("test")
+        embed_status = f"working (dim={len(test_embedding)})"
+    except Exception as e:
+        embed_status = f"error: {str(e)}"
+
+    search_status = "unknown"
+    try:
+        test_embedding = embed_query("What is ROS?")
+        results = qdrant_client.search(
+            collection_name="rag_embeddings",
+            query_vector=test_embedding,
+            limit=1
+        )
+        search_status = f"working ({len(results)} results)"
+    except Exception as e:
+        search_status = f"error: {str(e)}"
+
+    return {
+        "qdrant_url_set": bool(QDRANT_URL),
+        "qdrant_url_value": QDRANT_URL[:50] + "..." if QDRANT_URL and len(QDRANT_URL) > 50 else QDRANT_URL,
+        "qdrant_api_key_set": bool(QDRANT_API_KEY),
+        "cohere_api_key_set": bool(COHERE_API_KEY),
+        "openrouter_api_key_set": bool(OPENROUTER_API_KEY),
+        "qdrant_connection": qdrant_status,
+        "cohere_embed": embed_status,
+        "qdrant_search": search_status,
+        "timestamp": datetime.now().isoformat()
+    }
+
+
 @app.post("/ask", response_model=AskResponse)
 async def ask_question(request: AskRequest) -> Union[AskResponse, JSONResponse]:
     """

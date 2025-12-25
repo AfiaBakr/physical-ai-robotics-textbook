@@ -3,12 +3,17 @@ OpenAI Agent wrapper for RAG response generation.
 """
 import os
 import logging
+from pathlib import Path
 from typing import List, Dict, Any, Optional
 from openai import OpenAI
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables (explicit path for Docker)
+env_path = Path(__file__).parent / '.env'
+if env_path.exists():
+    load_dotenv(env_path)
+else:
+    load_dotenv()
 
 # Initialize OpenAI client with OpenRouter
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
