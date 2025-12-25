@@ -117,8 +117,12 @@ export type RAGApiResult =
 export const CHAT_STORAGE_KEY = 'rag-chat-history';
 export const CHAT_STORAGE_VERSION = 1;
 
+// Fallback URL if environment variable is not set
+export const FALLBACK_API_URL = 'https://afiabakr-book-chatbot.hf.space';
+
+// Default API config - baseUrl should be set from getApiConfig()
 export const DEFAULT_API_CONFIG: RAGApiConfig = {
-  baseUrl: 'https://afiabakr-book-chatbot.hf.space',
+  baseUrl: FALLBACK_API_URL,
   timeout: 10000,
 };
 

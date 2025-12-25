@@ -9,6 +9,11 @@ const config: Config = {
   tagline: 'A Complete Course on Embodied Intelligence',
   favicon: 'img/favicon.ico',
 
+  // Custom fields for environment variables
+  customFields: {
+    ragApiUrl: process.env.RAG_API_URL || 'https://afiabakr-book-chatbot.hf.space',
+  },
+
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
     v4: true, // Improve compatibility with the upcoming Docusaurus v4

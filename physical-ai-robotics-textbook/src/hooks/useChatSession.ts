@@ -7,7 +7,8 @@
  * @feature 005-frontend-rag-integration
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import type {
   ChatMessage,
   ChatError,
@@ -15,7 +16,8 @@ import type {
   AskResponse,
 } from '../types/chat';
 import { CHAT_STORAGE_KEY, CHAT_STORAGE_VERSION } from '../types/chat';
-import { ragApi } from '../services/ragApi';
+import { RAGApi } from '../services/ragApi';
+import { getApiConfig } from '../utils/getApiConfig';
 
 /**
  * Generate a unique ID for messages.
@@ -83,11 +85,18 @@ export interface UseChatSessionReturn {
  * Custom hook for managing chat session.
  */
 export function useChatSession(): UseChatSessionReturn {
+  const { siteConfig } = useDocusaurusContext();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<ChatError | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [lastQuery, setLastQuery] = useState<string | null>(null);
+
+  // Create RAGApi instance with config from environment variable
+  const ragApi = useMemo(() => {
+    const config = getApiConfig(siteConfig as { customFields?: { ragApiUrl?: string } });
+    return new RAGApi(config);
+  }, [siteConfig]);
 
   // Load messages from storage on mount
   useEffect(() => {
@@ -157,7 +166,7 @@ export function useChatSession(): UseChatSessionReturn {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [ragApi]);
 
   /**
    * Retry the last failed query.
