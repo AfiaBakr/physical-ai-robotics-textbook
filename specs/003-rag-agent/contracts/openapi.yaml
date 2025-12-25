@@ -1,0 +1,220 @@
+openapi: 3.1.0
+info:
+  title: RAG Agent API
+  description: |
+    API for querying a RAG (Retrieval-Augmented Generation) agent that retrieves
+    relevant documents from Qdrant and generates grounded responses using OpenAI.
+  version: 1.0.0
+  contact:
+    name: RAG Agent Support
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+paths:
+  /ask:
+    post:
+      summary: Ask the RAG Agent
+      description: |
+        Submit a natural language query to retrieve relevant documents and
+        generate a grounded answer based on the retrieved context.
+      operationId: askQuestion
+      tags:
+        - RAG
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AskRequest'
+            examples:
+              basic:
+                summary: Basic query
+                value:
+                  query: "What is machine learning?"
+              detailed:
+                summary: Detailed query
+                value:
+                  query: "How does reinforcement learning differ from supervised learning?"
+      responses:
+        '200':
+          description: Successful response with answer and sources
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AskResponse'
+              examples:
+                success:
+                  summary: Successful response
+                  value:
+                    answer: "Machine learning is a subset of artificial intelligence that enables computers to learn from data without being explicitly programmed."
+                    sources:
+                      - "https://docs.example.com/ml-intro"
+                      - "https://docs.example.com/ml-basics"
+                    matched_chunks:
+                      - chunk_id: "12345_0"
+                        text: "Machine learning involves training algorithms on datasets..."
+                        relevance_score: 0.95
+                      - chunk_id: "12346_1"
+                        text: "AI systems can learn patterns from historical data..."
+                        relevance_score: 0.87
+                no_results:
+                  summary: No matching documents found
+                  value:
+                    answer: "I couldn't find any relevant information in the knowledge base to answer your question about quantum computing."
+                    sources: []
+                    matched_chunks: []
+        '400':
+          description: Invalid request (missing or empty query)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_query:
+                  summary: Missing query field
+                  value:
+                    error: "Field 'query' is required"
+                    code: "INVALID_INPUT"
+                empty_query:
+                  summary: Empty query string
+                  value:
+                    error: "Query cannot be empty"
+                    code: "INVALID_INPUT"
+        '500':
+          description: Server error (service unavailable)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                embedding_failure:
+                  summary: Embedding service unavailable
+                  value:
+                    error: "Embedding service unavailable"
+                    code: "SERVICE_UNAVAILABLE"
+                database_failure:
+                  summary: Vector database unavailable
+                  value:
+                    error: "Database service unavailable"
+                    code: "SERVICE_UNAVAILABLE"
+                openai_failure:
+                  summary: LLM service unavailable
+                  value:
+                    error: "Generation service unavailable"
+                    code: "SERVICE_UNAVAILABLE"
+
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the RAG Agent service
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy]
+                  timestamp:
+                    type: string
+                    format: date-time
+              example:
+                status: "healthy"
+                timestamp: "2025-12-22T12:00:00Z"
+
+components:
+  schemas:
+    AskRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          description: Natural language question to ask the RAG agent
+          example: "What is machine learning?"
+
+    AskResponse:
+      type: object
+      required:
+        - answer
+        - sources
+        - matched_chunks
+      properties:
+        answer:
+          type: string
+          description: Generated response from the LLM based on retrieved context
+          example: "Machine learning is a subset of artificial intelligence..."
+        sources:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: List of source URLs from which the answer was derived
+          example:
+            - "https://docs.example.com/ml-intro"
+            - "https://docs.example.com/ml-basics"
+        matched_chunks:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchedChunk'
+          description: Retrieved document chunks used to generate the answer
+
+    MatchedChunk:
+      type: object
+      required:
+        - chunk_id
+        - text
+        - relevance_score
+      properties:
+        chunk_id:
+          type: string
+          description: Unique identifier for the document chunk
+          example: "12345_0"
+        text:
+          type: string
+          description: Content of the matched chunk
+          example: "Machine learning involves training algorithms on datasets..."
+        relevance_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Cosine similarity score between query and chunk
+          example: 0.95
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - code
+      properties:
+        error:
+          type: string
+          description: Human-readable error message
+          example: "Query cannot be empty"
+        code:
+          type: string
+          enum:
+            - INVALID_INPUT
+            - NO_RESULTS
+            - SERVICE_UNAVAILABLE
+            - INTERNAL_ERROR
+          description: Machine-readable error code
+          example: "INVALID_INPUT"
+
+tags:
+  - name: RAG
+    description: Retrieval-Augmented Generation endpoints
+  - name: Health
+    description: Service health monitoring
